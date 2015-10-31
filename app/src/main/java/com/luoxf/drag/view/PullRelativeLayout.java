@@ -2,9 +2,12 @@ package com.luoxf.drag.view;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewTreeObserver;
@@ -12,13 +15,15 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Scroller;
-
+import android.widget.TextView;
 import com.luoxf.drag.R;
+import com.nineoldandroids.view.ViewHelper;
 
 /**
  * Created by luoxf on 2015/10/27.
  */
 public class PullRelativeLayout extends RelativeLayout{
+    private final int REFRESHING = 1;
     private final String TAG = PullRelativeLayout.class.getSimpleName();
     private int screenHeight;
     private int screenWidth;
@@ -31,6 +36,10 @@ public class PullRelativeLayout extends RelativeLayout{
     private View refreshContent; //刷新内容
     private int refreshContentHeight; //刷新高度
     private View content;
+    private TextView refreshText; //刷新文本
+    private View refreshIcon; //刷新图标
+    private Handler handler;
+    private VelocityTracker velocityTracker; // 速度捕捉器
     public PullRelativeLayout(Context context) {
         super(context);
         initView(context);
@@ -55,6 +64,19 @@ public class PullRelativeLayout extends RelativeLayout{
         wm.getDefaultDisplay().getSize(point);
         screenWidth = point.x;
         screenHeight = point.y;
+        handler = new Handler() {
+            public void handleMessage(Message msg){
+                super.handleMessage(msg);
+                switch (msg.what) {
+                    //正在刷新
+                    case REFRESHING:
+                        if(refreshText.getText().toString().equals(mContext.getString(R.string.refresh_three))) {
+                            smoothScrollTo(0, refreshContentHeight);
+                        }
+                        break;
+                }
+            }
+        };
     }
 
     @Override
@@ -62,14 +84,16 @@ public class PullRelativeLayout extends RelativeLayout{
         super.onFinishInflate();
         refreshContent = findViewById(R.id.refresh_content);
         content = findViewById(R.id.content);
+        refreshText = (TextView) findViewById(R.id.refresh_text);
+        refreshIcon = findViewById(R.id.refresh_icon);
         refreshContent.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 refreshContent.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 refreshContentHeight = refreshContent.getHeight();
                 mScroller.setFinalY(refreshContentHeight);
-                LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams)getLayoutParams();
-                layoutParams.height = getHeight()  + refreshContentHeight;
+                LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) getLayoutParams();
+                layoutParams.height = getHeight() + refreshContentHeight;
                 layoutParams.width = getWidth();
                 setLayoutParams(layoutParams);
             }
@@ -84,6 +108,7 @@ public class PullRelativeLayout extends RelativeLayout{
         final int action = ev.getAction();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
+                velocityTracker = VelocityTracker.obtain();
                 intercepted = false;
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -133,7 +158,16 @@ public class PullRelativeLayout extends RelativeLayout{
         int y = (int) event.getY();
         switch (event.getAction()) {
             case MotionEvent.ACTION_MOVE:
+                velocityTracker.computeCurrentVelocity(1000);
                 int deltaY = y - mLastY;
+                //改变刷新图标和文字
+                if(mScroller.getFinalY() <= 0) {
+                    ViewHelper.setRotation(refreshIcon, 180);
+                    refreshText.setText(mContext.getString(R.string.refresh_two));
+                } else {
+                    ViewHelper.setRotation(refreshIcon, 180);
+                    refreshText.setText(mContext.getString(R.string.refresh_first));
+                }
                 //滑到顶部
                 if(mScroller.getFinalY() - deltaY > refreshContentHeight) {
                     smoothScrollTo(0, refreshContentHeight);
@@ -151,8 +185,28 @@ public class PullRelativeLayout extends RelativeLayout{
             case MotionEvent.ACTION_UP:
                 //自动滑到顶部
                 if(isNeedToUp) {
-                    smoothScrollTo(0, refreshContentHeight);
+                    //正在刷新
+                    if(mScroller.getFinalY() <= 0) {
+                        smoothScrollTo(0, 0);
+                        refreshText.setText(mContext.getString(R.string.refresh_three));
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(1000);
+                                    handler.sendEmptyMessage(REFRESHING);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
+                    } else {
+                        smoothScrollTo(0, refreshContentHeight);
+                    }
                 }
+                //清除速度
+                velocityTracker.clear();
+                velocityTracker.recycle();
                 break;
             default:
                 break;

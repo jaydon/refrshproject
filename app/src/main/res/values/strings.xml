@@ -3,4 +3,9 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+
+    <string name="refresh_first">下拉刷新</string>
+    <string name="refresh_two">松开开始刷新</string>
+    <string name="refresh_three">正在刷新</string>
+    <string name="refresh_four">刷新结束</string>
 </resources>

@@ -1,0 +1,139 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/refresh_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/holo_blue_light">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="头部"
+                android:gravity="center_horizontal"
+                android:padding="10dp"/>
+    </RelativeLayout>
+
+    <com.luoxf.drag.view.PullRelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/black">
+
+        <RelativeLayout
+            android:id="@+id/refresh_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/refresh_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="15dp"
+                android:scaleType="centerCrop"
+                android:src="@mipmap/refresh_down"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"/>
+
+            <TextView
+                android:id="@+id/refresh_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:padding="15dp"
+                android:text="下拉刷新"
+                android:textColor="@android:color/white"/>
+
+        </RelativeLayout>
+
+       <ScrollView
+           android:id="@+id/content"
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:background="@android:color/white"
+           android:layout_below="@id/refresh_content"
+           android:scrollbars="none">
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="match_parent"
+               android:orientation="vertical">
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:padding="20dp"
+                   android:text="ScrollDEMO1" />
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:padding="20dp"
+                   android:text="ScrollDEMO2" />
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:padding="20dp"
+                   android:text="ScrollDEMO3" />
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:padding="20dp"
+                   android:text="ScrollDEMO4" />
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:padding="20dp"
+                   android:text="ScrollDEMO" />
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:padding="20dp"
+                   android:text="ScrollDEMO5" />
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:padding="20dp"
+                   android:text="ScrollDEMO" />
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:padding="20dp"
+                   android:text="ScrollDEMO6" />
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:padding="20dp"
+                   android:text="ScrollDEMO7" />
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:padding="20dp"
+                   android:text="ScrollDEMO8" />
+
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:padding="20dp"
+                   android:text="ScrollDEMO9" />
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:padding="20dp"
+                   android:text="ScrollDEMO10" />
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:padding="20dp"
+                   android:text="ScrollDEMO11" />
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:padding="20dp"
+                   android:text="ScrollDEMO12" />
+
+           </LinearLayout>
+       </ScrollView>
+
+    </com.luoxf.drag.view.PullRelativeLayout>
+</LinearLayout>

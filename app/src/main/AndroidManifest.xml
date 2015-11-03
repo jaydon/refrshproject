@@ -32,6 +32,10 @@
             android:name=".PullActivity"
             android:label="@string/app_name" >
         </activity>
+        <activity
+            android:name=".CheckBoxActivity"
+            android:label="@string/app_name" >
+        </activity>
     </application>
 
 </manifest>

@@ -40,4 +40,12 @@
         android:padding="10dp"
         android:text="RefreshActivity"/>
 
+    <TextView
+        android:id="@+id/checkbox_demo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:padding="10dp"
+        android:text="CheckBoxDemo"/>
+
 </LinearLayout>

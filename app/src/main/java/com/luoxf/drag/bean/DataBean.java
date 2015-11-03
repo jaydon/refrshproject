@@ -5,4 +5,5 @@ package com.luoxf.drag.bean;
  */
 public class DataBean {
     public String content;
+    public boolean check;
 }

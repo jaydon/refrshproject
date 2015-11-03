@@ -108,7 +108,6 @@ public class PullRelativeLayout extends RelativeLayout{
         final int action = ev.getAction();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
-                velocityTracker = VelocityTracker.obtain();
                 intercepted = false;
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -117,6 +116,8 @@ public class PullRelativeLayout extends RelativeLayout{
                 if(mScroller.getFinalY() == refreshContentHeight && (deltaY < 0 || content.getScrollY() != 0)) {
                     return false;
                 } else {
+                    velocityTracker = VelocityTracker.obtain();
+                    velocityTracker.addMovement(ev);
                     return true;
                 }
             case MotionEvent.ACTION_UP:
@@ -137,8 +138,12 @@ public class PullRelativeLayout extends RelativeLayout{
 
     //调用此方法设置滚动的相对偏移
     public void smoothScrollBy(int dx, int dy) {
-        //设置mScroller的滚动偏移量
-        mScroller.startScroll(mScroller.getFinalX(), mScroller.getFinalY(), dx, dy);
+        velocityTracker.computeCurrentVelocity(1000);
+        if(Math.abs(dy) < refreshContentHeight * 2) {
+            mScroller.startScroll(mScroller.getFinalX(), mScroller.getFinalY(), dx, dy, 500);
+        } else {
+            mScroller.startScroll(mScroller.getFinalX(), mScroller.getFinalY(), dx, dy, 2000);
+        }
         invalidate();//这里必须调用invalidate()才能保证computeScroll()会被调用，否则不一定会刷新界面，看不到滚动效果
     }
     @Override
@@ -158,7 +163,6 @@ public class PullRelativeLayout extends RelativeLayout{
         int y = (int) event.getY();
         switch (event.getAction()) {
             case MotionEvent.ACTION_MOVE:
-                velocityTracker.computeCurrentVelocity(1000);
                 int deltaY = y - mLastY;
                 //改变刷新图标和文字
                 if(mScroller.getFinalY() <= 0) {

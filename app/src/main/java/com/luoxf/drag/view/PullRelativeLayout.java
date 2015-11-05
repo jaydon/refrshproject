@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Scroller;
@@ -23,7 +25,10 @@ import com.nineoldandroids.view.ViewHelper;
  * Created by luoxf on 2015/10/27.
  */
 public class PullRelativeLayout extends RelativeLayout{
-    private final int REFRESHING = 1;
+    private final int BEFOREREFRESH = 1;
+    private final int UPREFRESH = 2;
+    private final int REFRESHING = 3;
+    private int flag = 0;
     private final String TAG = PullRelativeLayout.class.getSimpleName();
     private int screenHeight;
     private int screenWidth;
@@ -71,6 +76,7 @@ public class PullRelativeLayout extends RelativeLayout{
                     //正在刷新
                     case REFRESHING:
                         if(refreshText.getText().toString().equals(mContext.getString(R.string.refresh_three))) {
+                            flag = 0;
                             smoothScrollTo(0, refreshContentHeight);
                         }
                         break;
@@ -165,13 +171,25 @@ public class PullRelativeLayout extends RelativeLayout{
             case MotionEvent.ACTION_MOVE:
                 int deltaY = y - mLastY;
                 //改变刷新图标和文字
+                //改变刷新图标和文字
                 if(mScroller.getFinalY() <= 0) {
-                    ViewHelper.setRotation(refreshIcon, 180);
-                    refreshText.setText(mContext.getString(R.string.refresh_two));
+                    //变成松开刷新
+                    if(flag == 0) {
+                        Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.rotate_180_animation);
+                        refreshIcon.startAnimation(animation);
+                        flag = 1;
+                        refreshText.setText(mContext.getString(R.string.refresh_two));
+                    }
                 } else {
-                    ViewHelper.setRotation(refreshIcon, 180);
-                    refreshText.setText(mContext.getString(R.string.refresh_first));
+                    //变成下拉刷新
+                    if(flag == 1) {
+                        refreshText.setText(mContext.getString(R.string.refresh_first));
+                        flag = 0;
+                        Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.rotate_360_animation);
+                        refreshIcon.startAnimation(animation);
+                    }
                 }
+
                 //滑到顶部
                 if(mScroller.getFinalY() - deltaY > refreshContentHeight) {
                     smoothScrollTo(0, refreshContentHeight);

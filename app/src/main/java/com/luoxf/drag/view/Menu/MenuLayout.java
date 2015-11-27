@@ -27,7 +27,10 @@ public class MenuLayout extends FrameLayout{
     private int mLastX;
     private int mLastY;
     private int touchSlop; //最小滑动距离
-    private View mainLayout;
+    private View mainLayout; //主页
+    private View childMenuLayout; //菜单
+    private View menuIV; //菜单图标
+    private int childWidth; //菜单完度
     public MenuLayout(Context context) {
         super(context);
         initView(context);
@@ -51,12 +54,16 @@ public class MenuLayout extends FrameLayout{
         wm.getDefaultDisplay().getSize(point);
         screenWidth = point.x;
         screenHeight = point.y;
+        childWidth = 4 * screenWidth / 5;
     }
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
         mainLayout = findViewById(R.id.main_layout);
+        childMenuLayout = findViewById(R.id.child_menu_layout);
+        menuIV = findViewById(R.id.menu_iv);
+        childTranslationX(-screenWidth/4);
     }
 
     @Override
@@ -94,26 +101,33 @@ public class MenuLayout extends FrameLayout{
         switch (event.getAction()) {
             case MotionEvent.ACTION_MOVE:
                 if(mainLayout.getX() + deltaX <= 0) {
-                    ViewHelper.setTranslationX(mainLayout, 0);
-                } else if(mainLayout.getX() + deltaX >= 4 * screenWidth / 5) {
-                    ViewHelper.setTranslationX(mainLayout, 4 * screenWidth / 5);
+                    mainTranslationX(0);
+                    childTranslationX(-screenWidth / 4);
+                } else if(mainLayout.getX() + deltaX >= childWidth) {
+                    mainTranslationX(childWidth);
+                    childTranslationX(0);
                 }
                 else if(mainLayout.getX() > 0) {
-                    ViewHelper.setTranslationX(mainLayout, mainLayout.getX() + deltaX);
+                    mainTranslationX(mainLayout.getX() + deltaX);
+                    childTranslationX(childMenuLayout.getX() + deltaX / 3);
                 } else {
                     //认为是从左向右滑动
                     if(deltaX > 0 && deltaX > touchSlop) {
-                        ViewHelper.setTranslationX(mainLayout, mainLayout.getX() + deltaX);
+                        mainTranslationX(mainLayout.getX() + deltaX);
+                        childTranslationX(childMenuLayout.getX() + deltaX / 3);
                     }
                 }
 
                 break;
             case MotionEvent.ACTION_UP:
                 if(mainLayout.getX() <= screenWidth / 4) {
-                    ViewHelper.setTranslationX(mainLayout, 0);
+                    mainTranslationX(0);
+                    childTranslationX(-screenWidth / 4);
                 } else if(mainLayout.getX() > screenWidth / 4 ) {
-                    ViewHelper.setTranslationX(mainLayout, 4 * screenWidth / 5);
+                    mainTranslationX(childWidth);
+                    childTranslationX(0);
                 }
+
                 break;
             default:
                 break;
@@ -122,4 +136,35 @@ public class MenuLayout extends FrameLayout{
         mLastY = y;
         return true;
     }
+
+    /**
+     * 侧滑主菜单
+     * @param x
+     */
+    private void mainTranslationX(float x) {
+        ViewHelper.setAlpha(menuIV, 1- x / childWidth );
+        ViewHelper.setTranslationX(mainLayout, x);
+    }
+
+    /**
+     * 侧滑菜单选项
+     * @param x
+     */
+    private void childTranslationX(float x) {
+        ViewHelper.setTranslationX(childMenuLayout, x);
+    }
+
+
+    public void closeOrOpen() {
+        if(mainLayout.getX() == 0) {
+            mainTranslationX(childWidth);
+            childTranslationX(0);
+            ViewHelper.setAlpha(menuIV, 0);
+        } else {
+            mainTranslationX(0);
+            childTranslationX(-screenWidth / 4);
+            ViewHelper.setAlpha(menuIV, 100);
+        }
+    }
+
 }

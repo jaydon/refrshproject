@@ -10,6 +10,7 @@ import android.view.View;
 import com.luoxf.drag.adapter.DataAdapter;
 import com.luoxf.drag.bean.DataBean;
 import com.luoxf.drag.view.FullyLinearLayoutManager;
+import com.luoxf.drag.view.Menu.MenuLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,9 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayoutManager layoutManager; //线性列表
     private DataAdapter dataAdapter;
     private List<DataBean> dataBeanList = new ArrayList<>();
+
+    private View menuIV;
+    private MenuLayout slideLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +33,9 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initView() {
         dataRV = (RecyclerView) findViewById(R.id.data_rv);
+        menuIV = findViewById(R.id.menu_iv);
+        menuIV.setOnClickListener(this);
+        slideLayout = (MenuLayout) findViewById(R.id.slideLayout);
     }
 
     private void initData() {
@@ -52,6 +59,8 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             default:
+            case R.id.menu_iv:
+                slideLayout.closeOrOpen();
                 break;
         }
     }

@@ -14,6 +14,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private View pullDemo; //PullActivity
     private View refreshDemo; //RefreshActivity
     private View checkboxDemo; // CheckBox;
+    private View menuDemo; // menuDemo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         refreshDemo.setOnClickListener(this);
         checkboxDemo = findViewById(R.id.checkbox_demo);
         checkboxDemo.setOnClickListener(this);
+        menuDemo = findViewById(R.id.menu_demo);
+        menuDemo.setOnClickListener(this);
     }
 
     @Override
@@ -58,6 +61,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.checkbox_demo:
                 intent.setClass(this, CheckBoxActivity.class);
+                startActivity(intent);
+                break;
+
+            case R.id.menu_demo:
+                intent.setClass(this, MenuActivity.class);
                 startActivity(intent);
                 break;
             default:

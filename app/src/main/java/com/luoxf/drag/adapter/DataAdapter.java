@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.luoxf.drag.R;
 import com.luoxf.drag.bean.DataBean;
 import java.util.List;
@@ -44,7 +46,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataViewHolder> {
         dataViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Toast.makeText(mActivity, i + "", Toast.LENGTH_SHORT).show();
             }
         });
     }

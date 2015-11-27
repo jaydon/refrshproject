@@ -31,6 +31,7 @@ public class MenuLayout extends FrameLayout{
     private View childMenuLayout; //菜单
     private View menuIV; //菜单图标
     private int childWidth; //菜单完度
+    private int direction; //1左，2右
     public MenuLayout(Context context) {
         super(context);
         initView(context);
@@ -100,6 +101,12 @@ public class MenuLayout extends FrameLayout{
         int deltaX = x - mLastX;
         switch (event.getAction()) {
             case MotionEvent.ACTION_MOVE:
+                //向右
+                if(deltaX > 0) {
+                    direction = 2;
+                } else {
+                    direction = 1;
+                }
                 if(mainLayout.getX() + deltaX <= 0) {
                     mainTranslationX(0);
                     childTranslationX(-screenWidth / 4);
@@ -120,14 +127,23 @@ public class MenuLayout extends FrameLayout{
 
                 break;
             case MotionEvent.ACTION_UP:
-                if(mainLayout.getX() <= screenWidth / 4) {
-                    mainTranslationX(0);
-                    childTranslationX(-screenWidth / 4);
-                } else if(mainLayout.getX() > screenWidth / 4 ) {
-                    mainTranslationX(childWidth);
-                    childTranslationX(0);
+                if(direction == 2) {
+                    if(mainLayout.getX() <= screenWidth / 4) {
+                        mainTranslationX(0);
+                        childTranslationX(-screenWidth / 4);
+                    } else if(mainLayout.getX() > screenWidth / 4 ) {
+                        mainTranslationX(childWidth);
+                        childTranslationX(0);
+                    }
+                } else {
+                    if(mainLayout.getX() >= 3 * screenWidth / 5) {
+                        mainTranslationX(childWidth);
+                        childTranslationX(0);
+                    } else {
+                        mainTranslationX(0);
+                        childTranslationX(-screenWidth / 4);
+                    }
                 }
-
                 break;
             default:
                 break;

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Point;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.widget.ScrollerCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -14,6 +15,7 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.Interpolator;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Scroller;
@@ -33,7 +35,7 @@ public class PullRelativeLayout extends RelativeLayout{
     private int screenHeight;
     private int screenWidth;
     private Context mContext;
-    private Scroller mScroller;
+    private ScrollerCompat mScroller;
     private int mLastX;
     private int mLastY;
     private int touchSlop; //最小滑动距离
@@ -60,9 +62,20 @@ public class PullRelativeLayout extends RelativeLayout{
         initView(context);
     }
 
+    /**
+     * Interpolator defining the animation curve for mScroller
+     */
+    private static final Interpolator sInterpolator = new Interpolator() {
+        public float getInterpolation(float t) {
+            t -= 1.0f;
+            return t * t * t * t * t + 1.0f;
+        }
+    };
+
     private void initView(Context context) {
         this.mContext = context;
-        this.mScroller = new Scroller(context);
+//        this.mScroller = new ScrollerCompat(context);
+        this.mScroller = ScrollerCompat.create(context, sInterpolator);;
         touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
         WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         Point point = new Point();
@@ -97,7 +110,8 @@ public class PullRelativeLayout extends RelativeLayout{
             public void onGlobalLayout() {
                 refreshContent.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 refreshContentHeight = refreshContent.getHeight();
-                mScroller.setFinalY(refreshContentHeight);
+//                mScroller.setFinalY(refreshContentHeight);
+                scrollTo(0, refreshContentHeight);
                 LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) getLayoutParams();
                 layoutParams.height = getHeight() + refreshContentHeight;
                 layoutParams.width = getWidth();

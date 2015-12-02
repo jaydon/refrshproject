@@ -144,6 +144,7 @@ public class PullRelativeLayout extends RelativeLayout{
                 intercepted = false;
                 break;
         }
+
         mLastX = x;
         mLastY = y;
         return intercepted;

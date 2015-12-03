@@ -35,7 +35,8 @@ public class PullRelativeLayout extends RelativeLayout{
     private int screenHeight;
     private int screenWidth;
     private Context mContext;
-    private ScrollerCompat mScroller;
+//    private ScrollerCompat mScroller;
+    private Scroller mScroller;
     private int mLastX;
     private int mLastY;
     private int touchSlop; //最小滑动距离
@@ -74,8 +75,8 @@ public class PullRelativeLayout extends RelativeLayout{
 
     private void initView(Context context) {
         this.mContext = context;
-//        this.mScroller = new ScrollerCompat(context);
-        this.mScroller = ScrollerCompat.create(context, sInterpolator);;
+        this.mScroller = new Scroller(context, sInterpolator);
+//        this.mScroller = ScrollerCompat.create(context, sInterpolator);
         touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
         WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         Point point = new Point();
@@ -110,7 +111,7 @@ public class PullRelativeLayout extends RelativeLayout{
             public void onGlobalLayout() {
                 refreshContent.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 refreshContentHeight = refreshContent.getHeight();
-//                mScroller.setFinalY(refreshContentHeight);
+                mScroller.setFinalY(refreshContentHeight);
                 scrollTo(0, refreshContentHeight);
                 LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) getLayoutParams();
                 layoutParams.height = getHeight() + refreshContentHeight;

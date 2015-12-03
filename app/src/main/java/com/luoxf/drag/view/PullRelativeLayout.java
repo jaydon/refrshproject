@@ -175,6 +175,7 @@ public class PullRelativeLayout extends RelativeLayout{
             scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
             //必须调用该方法，否则不一定能看到滚动效果
             postInvalidate();
+
         }
     }
 

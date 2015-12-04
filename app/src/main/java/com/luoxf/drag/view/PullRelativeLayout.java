@@ -5,7 +5,6 @@ import android.graphics.Point;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -197,7 +196,6 @@ public class PullRelativeLayout extends RelativeLayout{
                 } else {
                     int pointerId = (event.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK)>>>
                             MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-                    Log.e("pointerId", pointerId + "");
                     if(pointerId == 0) {
                         deltaY = y - mLastY;
                     }

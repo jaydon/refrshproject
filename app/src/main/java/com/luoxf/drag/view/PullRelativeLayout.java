@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Point;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.widget.ScrollerCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -21,7 +20,6 @@ import android.widget.RelativeLayout;
 import android.widget.Scroller;
 import android.widget.TextView;
 import com.luoxf.drag.R;
-import com.nineoldandroids.view.ViewHelper;
 
 /**
  * Created by luoxf on 2015/10/27.
@@ -112,7 +110,7 @@ public class PullRelativeLayout extends RelativeLayout{
                 refreshContent.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 refreshContentHeight = refreshContent.getHeight();
                 mScroller.setFinalY(refreshContentHeight);
-                scrollTo(0, refreshContentHeight);
+//                scrollTo(0, refreshContentHeight);
                 LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) getLayoutParams();
                 layoutParams.height = getHeight() + refreshContentHeight;
                 layoutParams.width = getWidth();
@@ -126,9 +124,10 @@ public class PullRelativeLayout extends RelativeLayout{
         boolean intercepted = false;
         int x = (int) ev.getX();
         int y = (int) ev.getY();
-        final int action = ev.getAction();
-        switch (action) {
+        final int action = ev.getActionMasked();
+        switch (action & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_POINTER_DOWN:
                 intercepted = false;
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -137,11 +136,17 @@ public class PullRelativeLayout extends RelativeLayout{
                 if(mScroller.getFinalY() == refreshContentHeight && (deltaY < 0 || content.getScrollY() != 0)) {
                     return false;
                 } else {
-                    velocityTracker = VelocityTracker.obtain();
-                    velocityTracker.addMovement(ev);
-                    return true;
+                    if(Math.abs(deltaY) > touchSlop) {
+                        velocityTracker = VelocityTracker.obtain();
+                        velocityTracker.addMovement(ev);
+                        return true;
+                    } else {
+                        return false;
+                    }
+
                 }
             case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_POINTER_UP:
                 intercepted = false;
                 break;
         }
@@ -184,9 +189,22 @@ public class PullRelativeLayout extends RelativeLayout{
     public boolean onTouchEvent(MotionEvent event) {
         int x = (int) event.getX();
         int y = (int) event.getY();
-        switch (event.getAction()) {
+        switch (event.getActionMasked()) {
             case MotionEvent.ACTION_MOVE:
-                int deltaY = y - mLastY;
+                int deltaY = 0;
+                if(event.getPointerCount() == 1) {
+                    deltaY = y - mLastY;
+                } else {
+                    int pointerId = (event.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK)>>>
+                            MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+                    Log.e("pointerId", pointerId + "");
+                    if(pointerId == 0) {
+                        deltaY = y - mLastY;
+                    }
+                }
+                if(Math.abs(deltaY) < touchSlop) {
+                    return true;
+                }
                 //改变刷新图标和文字
                 //改变刷新图标和文字
                 if(mScroller.getFinalY() <= 0) {
@@ -220,7 +238,17 @@ public class PullRelativeLayout extends RelativeLayout{
                     smoothScrollBy(0, -deltaY);
                     isNeedToUp = true;
                 }
+                mLastX = x;
+                mLastY = y;
                 break;
+            //多指时只在最后一弹起时触发,现在只解决两指
+            //TODO
+            case MotionEvent.ACTION_POINTER_UP:
+                mScroller.abortAnimation();
+                if(event.getPointerCount() >= 1) {
+                    mLastY = (int) event.getY(event.findPointerIndex(event.getPointerCount() - 1));
+                }
+                return true;
             case MotionEvent.ACTION_UP:
                 //自动滑到顶部
                 if(isNeedToUp) {
@@ -250,8 +278,6 @@ public class PullRelativeLayout extends RelativeLayout{
             default:
                 break;
         }
-        mLastX = x;
-        mLastY = y;
         return true;
     }
 }

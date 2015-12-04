@@ -241,7 +241,7 @@ public class PullRelativeLayout extends RelativeLayout{
                 mLastX = x;
                 mLastY = y;
                 break;
-            //多指时只在最后一弹起时触发,现在只解决两指
+            //多指时只在最后一弹起时触发,现在只解决两指，在这里要更新mLastY，不然在会小的移动<touchslop的时候，会因为y-mLastY过大，而导致滑动
             //TODO
             case MotionEvent.ACTION_POINTER_UP:
                 mScroller.abortAnimation();
